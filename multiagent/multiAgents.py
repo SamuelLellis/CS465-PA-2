@@ -16,6 +16,7 @@ from util import manhattanDistance
 from game import Directions
 import random, util
 
+
 from game import Agent
 
 class ReflexAgent(Agent):
@@ -70,11 +71,46 @@ class ReflexAgent(Agent):
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
         newFood = successorGameState.getFood()
+        oldFood = currentGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-
+        
+        
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        distanceToPellet = float('+inf')
+        for x in range(0, oldFood.width):
+            for y in range(0, oldFood.height):
+                if oldFood[x][y] == True:
+                    distance = float(manhattanDistance(newPos,(x,y)))
+                    if (distance < distanceToPellet):
+                        distanceToPellet = distance
+            
+ 
+
+        distanceToGhost = float('+inf')
+        for x in newGhostStates:
+            distance = float(manhattanDistance(newPos, x.getPosition()))
+            if distance < distanceToGhost:
+                distanceToGhost = distance 
+                 
+        wallscore = 0
+        
+        if action == Directions.STOP:
+            wallscore = -8
+        
+        
+        pelletscore = 0
+        if distanceToPellet == 0:
+            pelletscore = 2
+        else:
+            pelletscore = (1/distanceToPellet)
+            
+        if distanceToGhost == 0:
+            ghostscore = float('-inf')
+        else:
+            ghostscore = (2.0-(1.0/((.5)*distanceToGhost)))
+            
+        return pelletscore + ghostscore + wallscore 
 
 def scoreEvaluationFunction(currentGameState):
     """

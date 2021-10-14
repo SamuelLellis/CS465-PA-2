@@ -165,7 +165,44 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        def minimax(node, depth, agent):
+            if depth == 0  or node.isWin() or node.isLose():
+                return self.evaluationFunction(node), None
+            if agent == 0:
+                value = float('-inf')
+                bestAction = None
+                
+                childActions = node.getLegalActions(0)
+                for iter in childActions:
+                    gameStateAgent = node.generateSuccessor(agent, iter)
+                    #value = max(value, minimax(iter, depth - 1, (agent + 1) % gameStateAgent.getNumAgents())) 
+                    score, _ = minimax(gameStateAgent, depth - 1, (agent + 1) % gameStateAgent.getNumAgents())
+                    if score > value:
+                        value = score
+                        bestAction = iter
+                    
+                return value, bestAction
+            else:
+                value = float('+inf')
+                bestAction = None
+                
+                childActions = node.getLegalActions(agent)
+                for iter in childActions:
+                    gameStateAgent = node.generateSuccessor(agent, iter)
+                    #value = min(value, minimax(iter, depth - 1, (agent + 1) % gameStateAgent.getNumAgents())) 
+                    score, _ = minimax(gameStateAgent, depth - 1, (agent + 1) % gameStateAgent.getNumAgents())
+                    if score < value:
+                        value = score
+                        bestAction = iter
+                    
+                return value, bestAction  
+
+        _, action = minimax(gameState,self.depth*gameState.getNumAgents(),0)      
+        return action        
+        
+        
+        
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -192,7 +229,46 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        def minimax(node, depth, agent):        
+            if depth == 0  or node.isWin() or node.isLose():
+                return self.evaluationFunction(node), None
+            if agent == 0:
+                value = float('-inf')
+                bestAction = None
+                
+                childActions = node.getLegalActions(0)
+                for iter in childActions:
+                    gameStateAgent = node.generateSuccessor(agent, iter)
+                    #value = max(value, minimax(iter, depth - 1, (agent + 1) % gameStateAgent.getNumAgents())) 
+                    score, _ = minimax(gameStateAgent, depth - 1, (agent + 1) % gameStateAgent.getNumAgents())
+                    if score > value:
+                        value = score
+                        bestAction = iter
+                        
+
+                    
+                return value, bestAction
+                
+            else:
+            
+                value = 0
+                
+                childActions = node.getLegalActions(agent)
+                for iter in childActions:
+                    gameStateAgent = node.generateSuccessor(agent, iter)
+                    #value = min(value, minimax(iter, depth - 1, (agent + 1) % gameStateAgent.getNumAgents())) 
+                    score, _ = minimax(gameStateAgent, depth - 1, (agent + 1) % gameStateAgent.getNumAgents())
+                    value += score
+
+                    
+                return (value/len(childActions)),None 
+                
+                
+        _, action = minimax(gameState, self.depth*gameState.getNumAgents(),0)      
+        return action 
+                
+                    
 
 def betterEvaluationFunction(currentGameState):
     """
